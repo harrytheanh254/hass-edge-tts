@@ -11,6 +11,16 @@ on:
         options:
         - vi-VN-HoaiMyNeural (Giong Nu Bac)
         - vi-VN-NamMinhNeural (Giong Nam Bac)
+      speed_choice:
+        description: 'Chon toc do doc'
+        required: true
+        default: '+0%'
+        type: choice
+        options:
+        - '+0%' (Chuan 1.0x)
+        - '+25%' (Nhanh 1.25x)
+        - '+50%' (Nhanh 1.5x)
+        - '+100%' (Nhanh 2.0x)
 
 jobs:
   generate:
@@ -29,14 +39,18 @@ jobs:
 
       - name: Tao file audio MP3
         run: |
-          # Lay ten giong doc tu lua chon cua ban
+          # Lấy thông số giọng đọc và tốc độ
           VOICE="${{ github.event.inputs.voice_choice }}"
           VOICE_CLEAN=$(echo $VOICE | cut -d' ' -f1)
           
-          edge-tts --voice $VOICE_CLEAN --file kichban.txt --write-media audio_youtube.mp3
+          SPEED="${{ github.event.inputs.speed_choice }}"
+          SPEED_CLEAN=$(echo $SPEED | cut -d' ' -f1)
+          
+          # Chạy lệnh chuyển đổi kèm tham số rate
+          edge-tts --voice $VOICE_CLEAN --rate=$SPEED_CLEAN --file kichban.txt --write-media audio_youtube.mp3
 
-      - name: Taile file MP3 ve
+      - name: Tai file MP3 ve
         uses: actions/upload-artifact@v4
         with:
           name: audio-output
-          path: audio_youtube.mp3 
+          path: audio_youtube.mp3
