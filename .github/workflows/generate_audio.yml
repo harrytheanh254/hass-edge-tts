@@ -6,7 +6,7 @@ on:
       voice_choice:
         description: 'Chon giong doc'
         required: true
-        default: 'vi-VN-HoaiMyNeural'
+        default: 'vi-VN-HoaiMyNeural (Giong Nu Bac)'
         type: choice
         options:
         - vi-VN-HoaiMyNeural (Giong Nu Bac)
@@ -14,13 +14,13 @@ on:
       speed_choice:
         description: 'Chon toc do doc'
         required: true
-        default: '+0%'
+        default: '+0% (Chuan 1.0x)'
         type: choice
         options:
-        - '+0%' (Chuan 1.0x)
-        - '+25%' (Nhanh 1.25x)
-        - '+50%' (Nhanh 1.5x)
-        - '+100%' (Nhanh 2.0x)
+        - '+0% (Chuan 1.0x)'
+        - '+25% (Nhanh 1.25x)'
+        - '+50% (Nhanh 1.5x)'
+        - '+100% (Nhanh 2.0x)'
 
 jobs:
   generate:
@@ -39,14 +39,12 @@ jobs:
 
       - name: Tao file audio MP3
         run: |
-          # Lấy thông số giọng đọc và tốc độ
           VOICE="${{ github.event.inputs.voice_choice }}"
-          VOICE_CLEAN=$(echo $VOICE | cut -d' ' -f1)
+          VOICE_CLEAN=$(echo $VOICE | awk '{print $1}')
           
           SPEED="${{ github.event.inputs.speed_choice }}"
-          SPEED_CLEAN=$(echo $SPEED | cut -d' ' -f1)
+          SPEED_CLEAN=$(echo $SPEED | awk '{print $1}')
           
-          # Chạy lệnh chuyển đổi kèm tham số rate
           edge-tts --voice $VOICE_CLEAN --rate=$SPEED_CLEAN --file kichban.txt --write-media audio_youtube.mp3
 
       - name: Tai file MP3 ve
