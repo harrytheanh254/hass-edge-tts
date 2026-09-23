@@ -1,0 +1,42 @@
+name: Tao Audio Edge TTS
+
+on:
+  workflow_dispatch:
+    inputs:
+      voice_choice:
+        description: 'Chon giong doc'
+        required: true
+        default: 'vi-VN-HoaiMyNeural'
+        type: choice
+        options:
+        - vi-VN-HoaiMyNeural (Giong Nu Bac)
+        - vi-VN-NamMinhNeural (Giong Nam Bac)
+
+jobs:
+  generate:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Lay ma nguon
+        uses: actions/checkout@v4
+
+      - name: Cai dat Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.x'
+
+      - name: Cai dat edge-tts
+        run: pip install edge-tts
+
+      - name: Tao file audio MP3
+        run: |
+          # Lay ten giong doc tu lua chon cua ban
+          VOICE="${{ github.event.inputs.voice_choice }}"
+          VOICE_CLEAN=$(echo $VOICE | cut -d' ' -f1)
+          
+          edge-tts --voice $VOICE_CLEAN --file kichban.txt --write-media audio_youtube.mp3
+
+      - name: Taile file MP3 ve
+        uses: actions/upload-artifact@v4
+        with:
+          name: audio-output
+          path: audio_youtube.mp3 
